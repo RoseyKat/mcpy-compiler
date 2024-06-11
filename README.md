@@ -30,3 +30,8 @@ Create a `config.json` file at the root directory of your project and set it up:
 Next run [compiler.py](https://github.com/RoseyKat/mcpy-compiler/blob/main/compiler.py) (or exe) at the root of your project. Which must have `BP` and/or `RP` folders. And you should now have a compiled project and you can actively modify your files and they will be compiled on save!
 
 If you run into any problems please create a [github issue](https://github.com/RoseyKat/mcpy-compiler/issues/new)!
+
+# Key notes
+* This *might* work on mac and linux although I can't make any promises, as long as you have the `output` set to something else other than `@com_mojang`.
+* Only png images will compile.
+* Sometimes a file might compile twice in one go.
