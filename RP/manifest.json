@@ -1,0 +1,39 @@
+{
+    "format_version": 2,
+    "header": {
+        "name": "test",
+        "description": "test",
+        "version": [
+            1,
+            0,
+            0
+        ],
+        "min_engine_version": [
+            1,
+            20,
+            80
+        ],
+        "uuid": "3288e1c0-2775-4979-b3a9-c44844277dab"
+    },
+    "modules": [
+        {
+            "type": "resources",
+            "uuid": "15493875-d5a6-4ad2-9a1a-c715768aba91",
+            "version": [
+                1,
+                0,
+                0
+            ]
+        }
+    ],
+    "dependencies": [
+        {
+            "uuid": "34fce4ff-1e69-4c77-b196-bd71ba6a3515",
+            "version": [
+                1,
+                0,
+                0
+            ]
+        }
+    ]
+}

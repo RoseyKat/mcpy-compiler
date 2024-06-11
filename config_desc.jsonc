@@ -1,0 +1,13 @@
+{
+    "output": "output", // Where to compile output to, you can do '@com_mojang' to go directly to com.mojang folder.
+    "auto_manifest": true, // If true then manifests will automatically create themselves and add any required dependencies, such as script imports.
+    "project_name": "test", // Name of project, also used to display name of addon.
+    "project_description": "test", // Same as `project_name` but description.
+    "target_version": "1.20.80", // Target minecraft version.
+    "script_entry": "scripts/Main.js", // Where your entry script is.
+    "packs": [ // Packs that are used, 'bp' for behavior, and 'rp' for resources.
+        "bp",
+        "rp"
+    ],
+    "show_compiled": false // Whether to print the files that were compiled
+}

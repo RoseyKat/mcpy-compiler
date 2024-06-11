@@ -1,0 +1,6 @@
+{
+    "values": [
+        "hello"
+    ]
+    // This comment won't be in the output!
+}
