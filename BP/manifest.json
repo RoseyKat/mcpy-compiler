@@ -18,7 +18,7 @@
     "modules": [
         {
             "type": "data",
-            "uuid": "25f8cf97-e748-4061-bfed-fe81ae81d597",
+            "uuid": "e081be3e-b9cf-4013-9efd-508ddd623025",
             "version": [
                 1,
                 0,
@@ -34,7 +34,7 @@
                 0,
                 0
             ],
-            "uuid": "fff28ce2-4c34-4032-b9f2-516e43cef33f"
+            "uuid": "846fd25e-b76a-4fdb-a0ff-1fa1cc5702ac"
         }
     ],
     "dependencies": [

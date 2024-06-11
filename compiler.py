@@ -166,14 +166,26 @@ def generate_manifests():
 
     try:
         with open("BP/manifest.json", "r") as f:
-            manifest = json.loads(f.read())["dependencies"]
+            manifest = json.loads(f.read())
+            dependencies = manifest["dependencies"]
 
-        for i in manifest:
+        bp_header_uuid = manifest["header"]["uuid"]
+
+        for i in dependencies:
             module = i["module_name"]
             version = i["version"]
 
             script_module_versions += [{"module": module, "ver": version}]
-    except:pass
+    except:
+        bp_header_uuid = str(uuid4())
+    
+    try:
+        with open("RP/manifest.json", "r") as f:
+            manifest = json.loads(f.read())
+
+        rp_header_uuid = manifest["header"]["uuid"]
+    except:
+        rp_header_uuid = str(uuid4())
 
     def add_to_modules(module):
         if module not in script_modules:
@@ -200,9 +212,6 @@ def generate_manifests():
     }]
 
     bp_dependencies = []
-
-    bp_header_uuid = str(uuid4())
-    rp_header_uuid = str(uuid4())
 
     if has_scripts:
         bp_manifest_modules += [{
