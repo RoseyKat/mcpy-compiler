@@ -163,6 +163,7 @@ def generate_manifests():
     has_scripts = False
     script_modules = []
     script_module_versions = []
+    script_uuid = False
 
     try:
         with open("BP/manifest.json", "r") as f:
@@ -170,6 +171,8 @@ def generate_manifests():
             dependencies = manifest["dependencies"]
 
         bp_header_uuid = manifest["header"]["uuid"]
+        bp_module_uuid = manifest["modules"][0]["uuid"]
+        script_uuid = manifest["modules"][1]["uuid"]
 
         for i in dependencies:
             module = i["module_name"]
@@ -178,14 +181,17 @@ def generate_manifests():
             script_module_versions += [{"module": module, "ver": version}]
     except:
         bp_header_uuid = str(uuid4())
+        bp_module_uuid = str(uuid4())
     
     try:
         with open("RP/manifest.json", "r") as f:
             manifest = json.loads(f.read())
 
         rp_header_uuid = manifest["header"]["uuid"]
+        rp_module_uuid = manifest["modules"][0]["uuid"]
     except:
         rp_header_uuid = str(uuid4())
+        rp_module_uuid = str(uuid4())
 
     def add_to_modules(module):
         if module not in script_modules:
@@ -207,19 +213,21 @@ def generate_manifests():
 
     bp_manifest_modules = [{
         "type": "data",
-        "uuid": str(uuid4()),
+        "uuid": bp_module_uuid,
         "version": [1, 0, 0]
     }]
 
     bp_dependencies = []
 
     if has_scripts:
+        if script_uuid == False:
+            script_uuid = str(uuid4())
         bp_manifest_modules += [{
             "type": "script",
             "entry": config["script_entry"],
             "language": "javascript",
             "version": [1, 0, 0],
-            "uuid": str(uuid4())
+            "uuid": script_uuid
         }]
 
         for i in script_modules:
@@ -274,7 +282,7 @@ def generate_manifests():
         "modules": [
             {
                 "type": "resources",
-                "uuid": str(uuid4()),
+                "uuid": rp_module_uuid,
                 "version": [1, 0, 0]
             }
         ],
