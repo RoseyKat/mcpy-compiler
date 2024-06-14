@@ -234,6 +234,7 @@ class single_compile:
 
     def gen_json(path):
         """Compile generic json, output will have removed comments"""
+        last_resort = False
         try:
             if path.endswith("manifest.json"):
                 time.sleep(0.15)
@@ -242,20 +243,27 @@ class single_compile:
                     json_file = json.loads(f.read())
 
             except:
-                commentless_json = single_compile.remove_json_comments(path)
-                json_file = json.loads(commentless_json)
-                del commentless_json
+                try:
+                    commentless_json = single_compile.remove_json_comments(path)
+                    json_file = json.loads(commentless_json)
+                    del commentless_json
+                except:
+                    last_resort = True
+                    single_compile.byte_file(path)
+                    global warnings
+                    warnings.append(f"WARNING: '{path}' resorted to compiling as bytes, double check output file.")
 
-            os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
-            with open(f"{single_compile.convert_to_output(path)}", "w") as f:
-                f.write(json.dumps(json_file))
+            if last_resort == False:
+                os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
+                with open(f"{single_compile.convert_to_output(path)}", "w") as f:
+                    f.write(json.dumps(json_file))
+                    
         except json.JSONDecodeError as error:
             if str(error) == "Expecting value: line 1 column 1 (char 0)":
                 warnings.append(f"WARNING: Empty json file: {path}")
             else:
                 raise
             
-
     def script(path):
         """Compile script file"""
         with open(path) as f:
@@ -504,7 +512,7 @@ def run():
         if "rp" in config["packs"]:
             iterate_pack("RP")
 
-        if config["auto_texture_defining"]:
+        if config["auto_texture_defining"] and "rp" in config["packs"]:
             if "items" in config["auto_textures_do"]:
                 with open("RP/textures/item_texture.json", "w") as f:
                     f.write(json.dumps(item_texture, indent=4))
@@ -525,6 +533,7 @@ def run():
 
         finishing_time = round(time.time() * 1000)
 
+        global warnings
         for i in warnings:
             print(i)
 
@@ -532,8 +541,10 @@ def run():
 
         observer = Observer()
 
-        observer.schedule(fileChangeHandler(), "./BP", recursive=True)
-        observer.schedule(fileChangeHandler(), "./RP", recursive=True)
+        if "bp" in config["packs"]:
+            observer.schedule(fileChangeHandler(), "./BP", recursive=True)
+        if "rp" in config["packs"]:
+            observer.schedule(fileChangeHandler(), "./RP", recursive=True)
 
         observer.start()
         print(f"Watching: {os.getcwd()}")
