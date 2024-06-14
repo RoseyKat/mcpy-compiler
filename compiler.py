@@ -74,6 +74,15 @@ class single_compile:
             case ".png":
                 file_success = True
                 single_compile.image(path)
+            case ".jpeg":
+                file_success = True
+                single_compile.image(path)
+            case ".jpg":
+                file_success = True
+                single_compile.image(path)
+            case ".webp":
+                file_success = True
+                single_compile.image(path)
             case ".lang":
                 file_success = True
                 single_compile.lang(path)
@@ -194,10 +203,13 @@ class single_compile:
         with open(f"{single_compile.convert_to_output(path)}", "w") as f:
             f.write(script)
 
-    def image(path):
+    def image(path:str):
         os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
+
+        ext = os.path.splitext(path)[1]
+
         image_file = cv2.imread(path, cv2.IMREAD_UNCHANGED)
-        cv2.imwrite(single_compile.convert_to_output(path), image_file)
+        cv2.imwrite(single_compile.convert_to_output(path.replace(ext, ".png")), image_file)
 
     def byte_file(path):
         with open(f"{path}", "rb") as f:
