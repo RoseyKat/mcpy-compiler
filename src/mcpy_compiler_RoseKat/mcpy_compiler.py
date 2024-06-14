@@ -38,6 +38,7 @@ class fileChangeHandler(FileSystemEventHandler):
     def on_deleted(self, event):
         if event.is_directory == False:
             single_compile.remove_file(event.src_path)
+            
 
 class compiler_tools:
     """Some useful tools for commonly used cases"""
