@@ -43,7 +43,7 @@ You can use this [example config](https://github.com/RoseyKat/mcpy-compiler/blob
 Next create a python script at the root directory of your project, and imort `mcpy_compiler`, you may tinker with it, but if you want to just get to it call `mcpy_compiler.run()` and it will do everything you need it to do!
 
 ```py
-from mcpy_compiler_RoseKat import mcpy_compiler
+from mcpy_compiler import mcpy_compiler
 mcpy_compiler.run()
 ```
 
