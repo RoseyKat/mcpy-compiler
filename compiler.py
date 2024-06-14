@@ -5,10 +5,15 @@ from watchdog.events import FileSystemEventHandler
 import time
 import cv2
 from uuid import uuid4
+import datetime
 
 with open("config.json", "r") as f:
     config = json.loads(f.read())
 
+item_texture = {"resource_pack_name": config["project_name"], "texture_data": {}}
+terrain_texture = {"resource_pack_name": config["project_name"], "num_mip_levels": 0, "padding": 0, "texture_data": {}}
+texture_list = []
+warnings = []
 compile_count = 0
 
 class fileChangeHandler(FileSystemEventHandler):
@@ -29,6 +34,35 @@ class fileChangeHandler(FileSystemEventHandler):
     def on_deleted(self, event):
         if event.is_directory == False:
             single_compile.remove_file(event.src_path)
+
+class compiler_tools:
+    def get_filetype(path:str):
+        ext = os.path.splitext(path)[1]
+
+        match ext:
+            case ".png":
+                return "image"
+            case ".jpeg":
+                return "image"
+            case ".jpg":
+                return "image"
+            case ".webp":
+                return "image"
+            case ".mc":
+                return "function"
+            case ".mcfunction":
+                return "function"
+            case ".json":
+                return "json"
+            case ".js":
+                return "script"
+            case ".ts":
+                return "script"
+            case ".lang":
+                return "language"
+            case ".ogg":
+                return "sound"
+        return None
 
 class single_compile:
     # The json library can't handle comments so gotta remove them :3 :3 :3 :3 >:(
@@ -98,13 +132,16 @@ class single_compile:
 
         if file_success == False and config["compile_confusing_files"] == False:
             compile_count -= 1
-            print(f"CONFUSING FILE: {path}")
+            warnings.append(f"CONFUSING FILE: {path}")
 
         elif config["compile_confusing_files"]:
             single_compile.byte_file(path)
 
         if config["show_compiled"]:
-            print(f"Compiled: {path}")
+            if config["show_dates"]:
+                print(f"{datetime.datetime.today()}: Compiled: {path}")
+            else:
+                print(f"Compiled: {path}")
 
     def remove_file(path:str):
         path = path.replace("\\", "/")
@@ -177,23 +214,30 @@ class single_compile:
                 f.write(write_function)
 
         except:
-            print(f"ERROR COMPILING: {path}")
+            warnings.append(f"ERROR COMPILING: {path}")
 
     def gen_json(path):
-        if path.endswith("manifest.json"):
-            time.sleep(0.15)
         try:
-            with open(f"{path}", "r") as f:
-                json_file = json.loads(f.read())
+            if path.endswith("manifest.json"):
+                time.sleep(0.15)
+            try:
+                with open(f"{path}", "r") as f:
+                    json_file = json.loads(f.read())
 
-        except:
-            commentless_json = single_compile.remove_json_comments(path)
-            json_file = json.loads(commentless_json)
-            del commentless_json
+            except:
+                commentless_json = single_compile.remove_json_comments(path)
+                json_file = json.loads(commentless_json)
+                del commentless_json
 
-        os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
-        with open(f"{single_compile.convert_to_output(path)}", "w") as f:
-            f.write(json.dumps(json_file))
+            os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
+            with open(f"{single_compile.convert_to_output(path)}", "w") as f:
+                f.write(json.dumps(json_file))
+        except json.JSONDecodeError as error:
+            if str(error) == "Expecting value: line 1 column 1 (char 0)":
+                warnings.append(f"WARNING: Empty json file: {path}")
+            else:
+                raise
+            
 
     def script(path):
         with open(path) as f:
@@ -379,8 +423,29 @@ def iterate_pack(path):
             filepath = str(folder + os.sep + file)
             filepath = filepath.replace("\\", "/")
 
-
             single_compile.file(filepath)
+
+            if path == "RP" and config["auto_texture_defining"]:
+                if filepath.startswith("RP/textures/items") and "items" in config["auto_textures_do"] and compiler_tools.get_filetype(filepath) == "image":
+                    texture_type = "item"
+                elif filepath.startswith("RP/textures/blocks") and "blocks" in config["auto_textures_do"] and compiler_tools.get_filetype(filepath) == "image":
+                    texture_type = "block"
+                else:
+                    texture_type = None
+
+                ext = os.path.splitext(filepath)[1]
+
+                match texture_type:
+                    case "item":
+                        global item_texture
+                        item_texture["texture_data"].update(({f"{os.path.split(filepath)[1].replace(ext, "")}": {"textures": filepath.replace("RP/", "").replace(ext, "")}}))
+                    case "block":
+                        global terrain_texture
+                        terrain_texture["texture_data"].update(({f"{os.path.split(filepath)[1].replace(ext, "")}": {"textures": filepath.replace("RP/", "").replace(ext, "")}}))
+
+                if filepath.startswith("RP/textures") and "list" in config["auto_textures_do"] and compiler_tools.get_filetype(filepath) == "image":
+                    global texture_list
+                    texture_list.append(f"{filepath.replace("RP/", "").replace(ext, "")}")
 
 starting_time = round(time.time() * 1000)
 
@@ -392,7 +457,29 @@ if "bp" in config["packs"]:
 if "rp" in config["packs"]:
     iterate_pack("RP")
 
+if config["auto_texture_defining"]:
+    if "items" in config["auto_textures_do"]:
+        with open("RP/textures/item_texture.json", "w") as f:
+            f.write(json.dumps(item_texture, indent=4))
+
+        single_compile.gen_json("RP/textures/item_texture.json")
+
+    if "blocks" in config["auto_textures_do"]:
+        with open("RP/textures/terrain_texture.json", "w") as f:
+            f.write(json.dumps(terrain_texture, indent=4))
+
+        single_compile.gen_json("RP/textures/terrain_texture.json")
+
+    if "list" in config["auto_textures_do"]:
+        with open("RP/textures/texture_list.json", "w") as f:
+            f.write(json.dumps(texture_list, indent=4))
+
+        single_compile.gen_json("RP/textures/texture_list.json")
+
 finishing_time = round(time.time() * 1000)
+
+for i in warnings:
+    print(i)
 
 print(f"Compiled {compile_count} files in: {str(starting_time - finishing_time).replace("-", "")}ms")
 

@@ -1,0 +1,11 @@
+{
+    "resource_pack_name": "test",
+    "texture_data": {
+        "jpgtexture": {
+            "textures": "textures/items/jpgtexture"
+        },
+        "texture": {
+            "textures": "textures/items/texture"
+        }
+    }
+}

@@ -10,6 +10,8 @@ A niche little compiler made in python that will go through all your addon files
 
 * Convert jpeg and webp to png. The compiler will automatically convert jpeg and webp images to png!
 
+* Automatic texture defining. The compiler can go through all your textures and place them in `item_texture.json` automatically with no need to do it manually. (the texture definition will be the filename, works also for blocks, and texture list)
+
 # Getting started
 Create a `config.json` file at the root directory of your project and set it up:    
 <sub>Please note that the actual config cannot have comments, and the compiler will fail if you try run it with a commented config
@@ -27,6 +29,13 @@ Create a `config.json` file at the root directory of your project and set it up:
     ],
     "show_compiled": false, // Whether to display succesfully compiled files
     "compile_confusing_files": false // Whether to compile unknown or confusing files, if true, the compiler will compile them as a bytes file.
+    "auto_texture_defining": true, // Whether to use the auto texture defining feature.
+    "auto_textures_do": [ // Which textures to define if `auto_texture_defining` is `true`
+        "items",
+        "blocks",
+        "list"
+    ],
+    "show_dates": true // Whether to show the date and time when a file compiles (`show_compiled` must be true)
 }
 ```
 
@@ -37,3 +46,4 @@ If you run into any problems please create a [github issue](https://github.com/R
 # Key notes
 * This *might* work on mac and linux although I can't make any promises, as long as you have the `output` set to something else other than `@com_mojang`.
 * Sometimes a file might compile twice in one go.
+* Only webp and jpg/jpeg images will be converted to png.

@@ -10,5 +10,12 @@
         "rp"
     ],
     "show_compiled": true,
-    "compile_confusing_files": false
+    "compile_confusing_files": false,
+    "auto_texture_defining": true,
+    "auto_textures_do": [
+        "items",
+        "blocks",
+        "list"
+    ],
+    "show_dates": true
 }

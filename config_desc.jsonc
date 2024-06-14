@@ -11,5 +11,12 @@
         "rp"
     ],
     "show_compiled": false, // Whether to print the files that were compiled.
-    "compile_confusing_files": false // Whether to compile unknown or confusing files, if true, the compiler will compile them as a bytes file.
+    "compile_confusing_files": false, // Whether to compile unknown or confusing files, if true, the compiler will compile them as a bytes file.
+    "auto_texture_defining": true, // Whether to automatically create texture definition files, such as 'item_textures.json'.
+    "auto_textures_do": [ // Which type of textures to automatically define
+        "items", // Go through `textures/items` and define them.
+        "blocks", // Go through `textures/blocks` and define them.
+        "list" // Go through all textures and place them in `textures/texture_list.json`.
+    ],
+    "show_dates": true // Whether to show the date and time when a file compiles (`show_compiled` must be true)
 }
