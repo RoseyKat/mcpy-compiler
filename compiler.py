@@ -1,29 +1,34 @@
 import os
-import shutil
 import json
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from time import sleep
+import time
 import cv2
 from uuid import uuid4
 
 with open("config.json", "r") as f:
     config = json.loads(f.read())
 
-global save_count
-save_count = 0
+compile_count = 0
 
 class fileChangeHandler(FileSystemEventHandler):
-    def on_modified(self, event):
-        global save_count
-        save_count += 1
-        if event.src_path.startswith(".\\output") == False and event.is_directory == False and save_count == 1:
-            single_compile.file(event.src_path)
+    def check_do_compile(path:str):
+        if path.startswith("./BP") and "bp" in config["packs"]:
+            single_compile.file(path)
+        elif path.startswith("./RP") and "rp" in config["packs"]:
+            single_compile.file(path)
 
-        # This is used to prevent a file from compiling several times from 1 save
-        if save_count >= 2:
-            sleep(0.2)
-            save_count = 0
+    def on_modified(self, event):
+        if event.is_directory == False:
+            fileChangeHandler.check_do_compile(event.src_path)
+
+    def on_created(self, event):
+        if event.is_directory == False:
+            fileChangeHandler.check_do_compile(event.src_path)
+
+    def on_deleted(self, event):
+        if event.is_directory == False:
+            single_compile.remove_file(event.src_path)
 
 class single_compile:
     # The json library can't handle comments so gotta remove them :3 :3 :3 :3 >:(
@@ -50,26 +55,62 @@ class single_compile:
         path = path.replace("\\", "/")
         path = path.replace("./", "")
 
-        if path.endswith(".mcfunction") or path.endswith(".mc"):
-            single_compile.mcfunc(path)
-        
-        elif path.endswith(".json"):
-            single_compile.gen_json(path)
+        global compile_count
+        compile_count += 1
 
-        elif path.endswith(".png"):
-            single_compile.image(path)
+        filetype = os.path.splitext(path)[1]
+        file_success = False
 
-        elif path.endswith(".js") or path.endswith(".ts"):
-            single_compile.script(path)
+        match filetype:
+            case ".mc":
+                file_success = True
+                single_compile.mcfunc(path)
+            case ".mcfunction":
+                file_success = True
+                single_compile.mcfunc(path)
+            case ".json":
+                file_success = True
+                single_compile.gen_json(path)
+            case ".png":
+                file_success = True
+                single_compile.image(path)
+            case ".lang":
+                file_success = True
+                single_compile.lang(path)
+            case ".js":
+                file_success = True
+                single_compile.script(path)
+            case ".ts":
+                file_success = True
+                single_compile.script(path)
+            case ".ogg":
+                file_success = True
+                single_compile.byte_file(path)
 
-        elif path.endswith(".lang"):
-            single_compile.lang(path)
-
-        else:
+        if file_success == False and config["compile_confusing_files"] == False:
+            compile_count -= 1
             print(f"CONFUSING FILE: {path}")
+
+        elif config["compile_confusing_files"]:
+            single_compile.byte_file(path)
 
         if config["show_compiled"]:
             print(f"Compiled: {path}")
+
+    def remove_file(path:str):
+        path = path.replace("\\", "/")
+        path = path.replace("./", "")
+
+        if path.endswith(".mc"):
+            path = path.replace(".mc", ".mcfunction")
+
+        if path.startswith("BP") and "bp" in config["packs"]:
+            os.remove(single_compile.convert_to_output(path))
+            print(f"Removed file: {path}")
+
+        elif path.startswith("RP") and "rp" in config["packs"]:
+            os.remove(single_compile.convert_to_output(path))
+            print(f"Removed file: {path}")
 
     def convert_to_output(path:str):
         if path.startswith("BP"):
@@ -131,7 +172,7 @@ class single_compile:
 
     def gen_json(path):
         if path.endswith("manifest.json"):
-            sleep(0.15)
+            time.sleep(0.15)
         try:
             with open(f"{path}", "r") as f:
                 json_file = json.loads(f.read())
@@ -157,6 +198,14 @@ class single_compile:
         os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
         image_file = cv2.imread(path, cv2.IMREAD_UNCHANGED)
         cv2.imwrite(single_compile.convert_to_output(path), image_file)
+
+    def byte_file(path):
+        with open(f"{path}", "rb") as f:
+            file = f.read()
+
+        os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
+        with open(f"{single_compile.convert_to_output(path)}", "wb") as f:
+            f.write(file)
 
 def generate_manifests():
     # Locate any required dependecies
@@ -321,11 +370,19 @@ def iterate_pack(path):
 
             single_compile.file(filepath)
 
+starting_time = round(time.time() * 1000)
+
 if config["auto_manifest"]:
     generate_manifests()
 
-iterate_pack("BP")
-iterate_pack("RP")
+if "bp" in config["packs"]:
+    iterate_pack("BP")
+if "rp" in config["packs"]:
+    iterate_pack("RP")
+
+finishing_time = round(time.time() * 1000)
+
+print(f"Compiled {compile_count} files in: {str(starting_time - finishing_time).replace("-", "")}ms")
 
 observer = Observer()
 
@@ -337,7 +394,7 @@ print(f"Watching: {os.getcwd()}")
 
 try:
     while True:
-        sleep(0.1)
+        time.sleep(0.1)
 except:
     observer.stop()
 

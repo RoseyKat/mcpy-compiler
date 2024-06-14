@@ -23,7 +23,8 @@ Create a `config.json` file at the root directory of your project and set it up:
         "bp",
         "rp"
     ],
-    "show_compiled": false // Whether to display succesfully compiled files
+    "show_compiled": false, // Whether to display succesfully compiled files
+    "compile_confusing_files": false // Whether to compile unknown or confusing files, if true, the compiler will compile them as a bytes file.
 }
 ```
 

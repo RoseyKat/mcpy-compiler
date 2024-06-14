@@ -1,4 +1,5 @@
 {
+    // Config descriptions:
     "output": "output", // Where to compile output to, you can do '@com_mojang' to go directly to com.mojang folder.
     "auto_manifest": true, // If true then manifests will automatically create themselves and add any required dependencies, such as script imports.
     "project_name": "test", // Name of project, also used to display name of addon.
@@ -9,5 +10,6 @@
         "bp",
         "rp"
     ],
-    "show_compiled": false // Whether to print the files that were compiled
+    "show_compiled": false, // Whether to print the files that were compiled.
+    "compile_confusing_files": false // Whether to compile unknown or confusing files, if true, the compiler will compile them as a bytes file.
 }

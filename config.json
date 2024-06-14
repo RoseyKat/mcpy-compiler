@@ -9,5 +9,6 @@
         "bp",
         "rp"
     ],
-    "show_compiled": false
+    "show_compiled": true,
+    "compile_confusing_files": false
 }
