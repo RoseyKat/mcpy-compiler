@@ -1,5 +1,5 @@
 # mcpy-compiler
-A niche little compiler made in python that will go through all your addon files and compile them to an output (such as com_mojang folder) and watch for any changes and compile them instantly!
+A niche little compiler made in python that will go through all your addon files and compile them to an output (such as com_mojang folder) and watch for any changes to compile them instantly!
 
 # Features
 * Automatic manifest generation. It will check what you have, such as scripts, and add it to the manifest automatically!
