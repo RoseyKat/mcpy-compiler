@@ -14,6 +14,7 @@ A niche little compiler made in python that will go through all your addon files
 
 # Getting started
 Create a `config.json` file at the root directory of your project and set it up:    
+You can use this [example config](https://github.com/RoseyKat/mcpy-compiler/blob/main/example_config.json)      
 <sub>Please note that the actual config cannot have comments, and the compiler will fail if you try run it with a commented config
 ```jsonc
 {
@@ -39,7 +40,12 @@ Create a `config.json` file at the root directory of your project and set it up:
 }
 ```
 
-Next run [compiler.py](https://github.com/RoseyKat/mcpy-compiler/blob/main/compiler.py) (or exe) at the root of your project. Which must have `BP` and/or `RP` folders. And you should now have a compiled project and you can actively modify your files and they will be compiled on save!
+Next create a python script at the root directory of your project, and imort `mcpy_compiler`, you may tinker with it, but if you want to just get to it call `mcpy_compiler.run()` and it will do everything you need it to do!
+
+```py
+import mcpy_compiler
+mcpy_compiler.run()
+```
 
 If you run into any problems please create a [github issue](https://github.com/RoseyKat/mcpy-compiler/issues/new)!
 

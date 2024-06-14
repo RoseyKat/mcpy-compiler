@@ -1,0 +1,9 @@
+LICENSE
+README.md
+pyproject.toml
+src/mcpy-compiler_RoseKat/__init__.py
+src/mcpy-compiler_RoseKat/mcpy_compiler.py
+src/mcpy_compiler_RoseKat.egg-info/PKG-INFO
+src/mcpy_compiler_RoseKat.egg-info/SOURCES.txt
+src/mcpy_compiler_RoseKat.egg-info/dependency_links.txt
+src/mcpy_compiler_RoseKat.egg-info/top_level.txt
