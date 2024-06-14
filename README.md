@@ -6,7 +6,7 @@ A niche little compiler made in python that will go through all your addon files
 
 * Optimized outputs. Removes blank lines, and ignores comments in files. (excluding scripts)
 
-* Pretty fast. I tested the compiler on a personal project that has about 2000~ files, and compiled them all in about 5 seconds!
+* Pretty fast. I tested the compiler on a personal project that has about 2000~ varying files, and compiled them all in about 5 seconds!
 
 # Getting started
 Create a `config.json` file at the root directory of your project and set it up:    
@@ -34,5 +34,5 @@ If you run into any problems please create a [github issue](https://github.com/R
 
 # Key notes
 * This *might* work on mac and linux although I can't make any promises, as long as you have the `output` set to something else other than `@com_mojang`.
-* Only png images will compile.
+* Only png images will compile by default.
 * Sometimes a file might compile twice in one go.
