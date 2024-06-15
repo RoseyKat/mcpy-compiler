@@ -8,8 +8,12 @@ import cv2
 from uuid import uuid4
 import datetime
 
-with open("config.json", "r") as f:
-    config = json.loads(f.read())
+try:
+    with open("config.json", "r") as f:
+        config = json.loads(f.read())
+except:
+    print("No config!")
+    exit()
 
 watch_ran = False
 item_texture = {"resource_pack_name": config["project_name"], "texture_data": {}}
