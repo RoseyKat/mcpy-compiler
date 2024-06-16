@@ -440,8 +440,8 @@ def generate_manifests():
         with open("RP/manifest.json", "w") as f:
             f.write(json.dumps(rp_manifest, indent=4))
 
-def iterate_pack(path):
-    """Walks through all files using `os.walk` and compiles them.\n\n`path` should be `BP` or `RP`"""
+def iterate_pack(path, foreachfile=None):
+    """Walks through all files using `os.walk` and compiles them.\n\n`path` should be `BP` or `RP`\n\n\nif `foreachfile` is a function, then it will call the function with the filepath as the parameter."""
     for folder, current_folder, files in os.walk(single_compile.convert_to_output(path)):
         for file in files:
             filepath = str(folder + os.sep + file)
@@ -457,7 +457,11 @@ def iterate_pack(path):
             filepath = str(folder + os.sep + file)
             filepath = filepath.replace("\\", "/")
 
-            single_compile.file(filepath)
+            if foreachfile is None:
+                single_compile.file(filepath)
+
+            if foreachfile is not None:
+                foreachfile(filepath)
 
             if path == "RP" and config["auto_texture_defining"]:
                 if filepath.startswith("RP/textures/items") and "items" in config["auto_textures_do"] and compiler_tools.get_filetype(filepath) == "image":
