@@ -122,7 +122,7 @@ class single_compile:
                 single_compile.mcfunc(path)
             case ".json":
                 file_success = True
-                if path.startswith("BP") and path.endswith("manifest.json") == False:
+                if path.startswith("BP/items") or path.startswith("BP/blocks") or path.startswith("BP/entities"):
                     single_compile.bp_json(path)
                 else:
                     single_compile.gen_json(path)
@@ -578,6 +578,8 @@ def build(addon:bool, splitpacks:bool):
                 file = f.read()
             with open(f"builds/{config["project_name"]} RP.mcpack", "wb") as f:
                 f.write(file)
+
+    output_override = None
 
 
 

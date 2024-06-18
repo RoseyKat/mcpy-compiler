@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: mcpy_compiler
-Version: 0.3.0
+Version: 0.3.1
 Summary: A Minecraft bedrock addon compiler made in python
 Author: Rose Kat
 Project-URL: Homepage, https://github.com/RoseyKat/mcpy-compiler
