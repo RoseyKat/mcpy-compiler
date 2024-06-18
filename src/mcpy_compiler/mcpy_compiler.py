@@ -7,6 +7,7 @@ import time
 import cv2
 from uuid import uuid4
 import datetime
+import shutil
 
 try:
     with open("config.json", "r") as f:
@@ -15,6 +16,7 @@ except:
     print("No config!")
     exit()
 
+output_override = None
 watch_ran = False
 item_texture = {"resource_pack_name": config["project_name"], "texture_data": {}}
 terrain_texture = {"resource_pack_name": config["project_name"], "num_mip_levels": 0, "padding": 0, "texture_data": {}}
@@ -120,7 +122,10 @@ class single_compile:
                 single_compile.mcfunc(path)
             case ".json":
                 file_success = True
-                single_compile.gen_json(path)
+                if path.startswith("BP") and path.endswith("manifest.json") == False:
+                    single_compile.bp_json(path)
+                else:
+                    single_compile.gen_json(path)
             case ".png":
                 file_success = True
                 single_compile.image(path)
@@ -177,16 +182,23 @@ class single_compile:
 
     def convert_to_output(path:str):
         """Convert `path` to configs output. If output is `@com_mojang` then returns packs development directory"""
+        global output_override
         if path.startswith("BP"):
-            if config["output"] == "@com_mojang":
+            if config["output"] == "@com_mojang" and output_override == None:
                 return path.replace("BP", os.path.expanduser(f"~/AppData/Local/Packages/Microsoft.MinecraftUWP_8wekyb3d8bbwe/LocalState/games/com.mojang/development_behavior_packs/{config["project_name"]} BP"))
+            
+            elif output_override != None:
+                return path.replace("BP", f"{output_override}/BP")
             
             else:
                 return path.replace("BP", f"{config["output"]}/BP")
         
         elif path.startswith("RP"):
-            if config["output"] == "@com_mojang":
+            if config["output"] == "@com_mojang" and output_override == None:
                 return path.replace("RP", os.path.expanduser(f"~/AppData/Local/Packages/Microsoft.MinecraftUWP_8wekyb3d8bbwe/LocalState/games/com.mojang/development_resource_packs/{config["project_name"]} RP"))
+            
+            elif output_override != None:
+                return path.replace("RP", f"{output_override}/RP")
             
             else:
                 return path.replace("RP", f"{config["output"]}/RP")
@@ -258,6 +270,49 @@ class single_compile:
                     warnings.append(f"WARNING: '{path}' resorted to compiling as bytes, double check output file.")
 
             if last_resort == False:
+                os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
+                with open(f"{single_compile.convert_to_output(path)}", "w") as f:
+                    f.write(json.dumps(json_file))
+                    
+        except json.JSONDecodeError as error:
+            if str(error) == "Expecting value: line 1 column 1 (char 0)":
+                warnings.append(f"WARNING: Empty json file: {path}")
+            else:
+                raise
+
+    def bp_json(path:str):
+        """Compiles items, blocks, and entities in behavior pack.\n\nPrimary use case is removing the slash at queue_command event"""
+        last_resort = False
+        if path.startswith("BP/items"):
+            file_type = "item"
+        elif path.startswith("BP/blocks"):
+            file_type = "block"
+        elif path.startswith("BP/entities"):
+            file_type = "entity"
+
+        try:
+            try:
+                with open(f"{path}", "r") as f:
+                    json_file = json.loads(f.read())
+
+            except:
+                try:
+                    commentless_json = single_compile.remove_json_comments(path)
+                    json_file = json.loads(commentless_json)
+                    del commentless_json
+                except:
+                    last_resort = True
+                    single_compile.byte_file(path)
+                    global warnings
+                    warnings.append(f"WARNING: '{path}' resorted to compiling as bytes, double check output file.")
+
+            if last_resort == False:
+                components = json_file[f"minecraft:{file_type}"]["components"]
+                del json_file[f"minecraft:{file_type}"]["components"]
+                string_json = str(json_file).replace("/", "").replace("'", "\"")
+                json_file = json.loads(string_json)
+                json_file[f"minecraft:{file_type}"] |= {"components": components}
+
                 os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
                 with open(f"{single_compile.convert_to_output(path)}", "w") as f:
                     f.write(json.dumps(json_file))
@@ -484,6 +539,47 @@ def iterate_pack(path, foreachfile=None):
                 if filepath.startswith("RP/textures") and "list" in config["auto_textures_do"] and compiler_tools.get_filetype(filepath) == "image":
                     global texture_list
                     texture_list.append(f"{filepath.replace("RP/", "").replace(ext, "")}")
+
+def build(addon:bool, splitpacks:bool):
+    """Build your project into production.\n\nif `addon` is `True` then it will build a `.mcaddoon` file.\n\nif `splitpacks` is `True` then it will build the RP and BP (if present) mcpacks seperately."""
+
+    global output_override
+    output_override = "builds/packs"
+
+    shutil.rmtree("builds/packs", True)
+
+    os.makedirs("builds/packs")
+
+    if "bp" in config["packs"]:
+        iterate_pack("BP")
+        os.rename("builds/packs/BP", f"builds/packs/{config["project_name"]} BP")
+    if "rp" in config["packs"]:
+        iterate_pack("RP")
+        os.rename("builds/packs/RP", f"builds/packs/{config["project_name"]} RP")
+
+    if addon:
+        shutil.make_archive(f"builds/{config["project_name"]}", "zip", "builds/packs")
+        with open(f"builds/{config["project_name"]}.zip", "rb") as f:
+            file = f.read()
+        with open(f"builds/{config["project_name"]}.mcaddon", "wb") as f:
+            f.write(file)
+
+    if splitpacks:
+        if "bp" in config["packs"]:
+            shutil.make_archive(f"builds/{config["project_name"]} BP", "zip", f"builds/packs/{config["project_name"]} BP")
+            with open(f"builds/{config["project_name"]} BP.zip", "rb") as f:
+                file = f.read()
+            with open(f"builds/{config["project_name"]} BP.mcpack", "wb") as f:
+                f.write(file)
+        
+        if "rp" in config["packs"]:
+            shutil.make_archive(f"builds/{config["project_name"]} RP", "zip", f"builds/packs/{config["project_name"]} RP")
+            with open(f"builds/{config["project_name"]} RP.zip", "rb") as f:
+                file = f.read()
+            with open(f"builds/{config["project_name"]} RP.mcpack", "wb") as f:
+                f.write(file)
+
+
 
 def start_watch():
     """Start watching for file changes"""

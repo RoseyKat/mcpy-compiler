@@ -6,11 +6,13 @@ A niche little compiler made in python that will go through all your addon files
 
 * Optimized outputs. Removes blank lines, and ignores comments in files. (excluding scripts)
 
-* Pretty fast. I tested the compiler on a personal project that has about 2000~ varying files, and compiled them all in about 5 seconds!
+* Pretty fast. I tested the compiler on a personal project that has about 2000~ varying files, and compiled them all in about 3 seconds!
 
 * Convert jpeg and webp to png. The compiler will automatically convert jpeg and webp images to png!
 
 * Automatic texture defining. The compiler can go through all your textures and place them in `item_texture.json` automatically with no need to do it manually. (the texture definition will be the filename, works also for blocks, and texture list)
+
+* Build projects into addons easily! Can compile all your files and then neatly place them into an mcaddon file!
 
 # Getting started
 Create a `config.json` file at the root directory of your project and set it up:    
@@ -45,6 +47,12 @@ Next create a python script at the root directory of your project, and imort `mc
 ```py
 from mcpy_compiler import mcpy_compiler
 mcpy_compiler.run()
+```
+
+To build a project:
+```py
+from mcpy_compiler import mcpy_compiler
+mcpy_compiler.build(True, True)
 ```
 
 If you run into any problems please create a [github issue](https://github.com/RoseyKat/mcpy-compiler/issues/new)!

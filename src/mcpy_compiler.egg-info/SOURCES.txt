@@ -2,6 +2,7 @@ LICENSE
 README.md
 pyproject.toml
 src/mcpy_compiler/__init__.py
+src/mcpy_compiler/config.py
 src/mcpy_compiler/mcpy_compiler.py
 src/mcpy_compiler.egg-info/PKG-INFO
 src/mcpy_compiler.egg-info/SOURCES.txt
