@@ -14,6 +14,10 @@ A niche little compiler made in python that will go through all your addon files
 
 * Build projects into addons easily! Can compile all your files and then neatly place them into an mcaddon file!
 
+* Search & Replace words/characters. Use `searcher.json` and insert a keyword to find in each file and replace.
+
+* Each file compiler flag. Each file can have it's own compiler flags, which is simply the first line of any file with a comment saying it's flag.
+
 # Getting started
 Create a `config.json` file at the root directory of your project and set it up:    
 You can use this [example config](https://github.com/RoseyKat/mcpy-compiler/blob/main/example_config.json)      
@@ -38,7 +42,8 @@ You can use this [example config](https://github.com/RoseyKat/mcpy-compiler/blob
         "blocks",
         "list"
     ],
-    "show_dates": true // Whether to show the date and time when a file compiles (`show_compiled` must be true)
+    "show_dates": true, // Whether to show the date and time when a file compiles (`show_compiled` must be true)
+    "use_searcher": true // Whether to compile with the emoji codex.
 }
 ```
 
@@ -61,3 +66,5 @@ If you run into any problems please create a [github issue](https://github.com/R
 * This *might* work on mac and linux although I can't make any promises, as long as you have the `output` set to something else other than `@com_mojang`.
 * Sometimes a file might compile twice in one go.
 * Only webp and jpg/jpeg images will be converted to png.
+* Json comments must be on a seperate line to compile as regular json.
+* The output is removed before new files are compiled into it.

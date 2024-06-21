@@ -1,0 +1,418 @@
+[
+    {
+        "search": ":EMOJI_Food",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_Armor:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_Heart:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_WoodenPickaxe:",
+        "replace_with": ""
+    },
+    {
+        "search": "EMOJI_WoodenSword",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_CraftingTable:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_Furnace:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_Minecoin:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_Token:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_CraftToggleOn:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_CraftToggleOff:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_Jump:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_Attack:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_JoyStick:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_Place:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_Sneak:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_Sprint:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_FlyUp",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_FlyDown:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_Dismount:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_LeftClick:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_RightClick:",
+        "replace_with": ""
+    },
+    {
+        "search": ":searchdleClick:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_Y:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_B:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_A:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_Back:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_Start:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_LB:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_RB:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_LT:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_RT:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_LS:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_RS:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_up:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_down:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_left:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_xbox_right:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_X:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_A:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_B:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_Y:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_+:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_-:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_L:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_R:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_ZL:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_ZR:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_L:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_R:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_up:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_down:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_left:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_switch_right:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_Triangle:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_Circle:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_Cross:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_Square:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_Share:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_Options:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_TouchPad:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_L1:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_R1:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_L2:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_R2:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_L3:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_R3:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_up:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_down:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_left:",
+        "replace_with": ""
+    },
+    {
+        "search": ":EMOJI_ps_right:",
+        "replace_with": ""
+    },
+    {
+        "search": "%black%",
+        "replace_with": "§0"
+    },
+    {
+        "search": "%dark_blue%",
+        "replace_with": "§1"
+    },
+    {
+        "search": "%dark_green%",
+        "replace_with": "§2"
+    },
+    {
+        "search": "%dark_aqua%",
+        "replace_with": "§3"
+    },
+    {
+        "search": "%dark_red%",
+        "replace_with": "§4"
+    },
+    {
+        "search": "%dark_purple%",
+        "replace_with": "§5"
+    },
+    {
+        "search": "%gold%",
+        "replace_with": "§6"
+    },
+    {
+        "search": "%gray%",
+        "replace_with": "§7"
+    },
+    {
+        "search": "%dark_gray%",
+        "replace_with": "§8"
+    },
+    {
+        "search": "%grey%",
+        "replace_with": "§7"
+    },
+    {
+        "search": "%dark_grey%",
+        "replace_with": "§8"
+    },
+    {
+        "search": "%blue%",
+        "replace_with": "§9"
+    },
+    {
+        "search": "%green%",
+        "replace_with": "§a"
+    },
+    {
+        "search": "%aqua%",
+        "replace_with": "§b"
+    },
+    {
+        "search": "%red%",
+        "replace_with": "§c"
+    },
+    {
+        "search": "%light_purple%",
+        "replace_with": "§d"
+    },
+    {
+        "search": "%yellow%",
+        "replace_with": "§e"
+    },
+    {
+        "search": "%white%",
+        "replace_with": "§f"
+    },
+    {
+        "search": "%minecoin_gold%",
+        "replace_with": "§g"
+    },
+    {
+        "search": "%quartz%",
+        "replace_with": "§h"
+    },
+    {
+        "search": "%iron%",
+        "replace_with": "§i"
+    },
+    {
+        "search": "%netherite%",
+        "replace_with": "§j"
+    },
+    {
+        "search": "%redstone%",
+        "replace_with": "§m"
+    },
+    {
+        "search": "%copper%",
+        "replace_with": "§n"
+    },
+    {
+        "search": "%golden%",
+        "replace_with": "§p"
+    },
+    {
+        "search": "%emerald%",
+        "replace_with": "§q"
+    },
+    {
+        "search": "%diamond%",
+        "replace_with": "§s"
+    },
+    {
+        "search": "%lapis%",
+        "replace_with": "§t"
+    },
+    {
+        "search": "%amethyst%",
+        "replace_with": "§u"
+    },
+    {
+        "search": "%obfuscated%",
+        "replace_with": "§k"
+    },
+    {
+        "search": "%bold%",
+        "replace_with": "§l"
+    },
+    {
+        "search": "%italic%",
+        "replace_with": "§o"
+    },
+    {
+        "search": "%reset%",
+        "replace_with": "§r"
+    }
+]

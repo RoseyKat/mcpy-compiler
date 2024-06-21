@@ -18,5 +18,6 @@
         "blocks", // Go through `textures/blocks` and define them.
         "list" // Go through all textures and place them in `textures/texture_list.json`.
     ],
-    "show_dates": true // Whether to show the date and time when a file compiles (`show_compiled` must be true)
+    "show_dates": true, // Whether to show the date and time when a file compiles (`show_compiled` must be true)
+    "use_searcher": true // Whether to compile with the searcher feature.
 }

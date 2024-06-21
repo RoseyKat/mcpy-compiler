@@ -17,5 +17,6 @@
         "blocks",
         "list"
     ],
-    "show_dates": true
+    "show_dates": true,
+    "use_searcher": true
 }

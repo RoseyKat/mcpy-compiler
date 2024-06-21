@@ -8,21 +8,80 @@ import cv2
 from uuid import uuid4
 import datetime
 import shutil
+import requests
+
+output_override = None
+watch_ran = False
+texture_list = []
+warnings = []
+compile_count = 0
+
+class mcpy_error(Exception):
+    def __init__(self, message):
+        self.message = message
+        super(mcpy_error, self).__init__(message)
 
 try:
     with open("config.json", "r") as f:
         config = json.loads(f.read())
-except:
-    print("No config!")
-    exit()
+        try:
+            config["output"]
+        except:
+            mcpy_error("config: output is missing!")
+            exit()
 
-output_override = None
-watch_ran = False
+        if "auto_manifest" not in config:
+            config["auto_manifest"] = False
+
+        if "project_name" not in config:
+            raise mcpy_error("config: project name is missing!")
+        
+        if "project_description" not in config:
+            config["project_description"] = config["project_description"]
+            warnings.append("WARNING: project description in config was not found, defaulted to project name!")
+
+        if "target_version" not in config:
+            latest = requests.get("https://launchermeta.mojang.com/mc/game/version_manifest.json").json()["latest"]["release"]
+
+            if len(latest.split(".")) == 2:
+                latest = f"{latest}.0"
+
+            config["target_version"] = latest
+            warnings.append("WARNING: target version not found in config, defaulted to latest minecraft version!")
+
+        if "script_entry" not in config:
+            config["script_entry"] = None
+
+        if "packs" not in config:
+            raise mcpy_error("config: missing packs")
+        
+        if "show_compiled" not in config:
+            config["show_compiled"] = True
+
+        if "compile_confusing_files" not in config:
+            config["compile_confusing_files"] = False
+
+        if "auto_texture_defining" not in config:
+            config["auto_texture_defining"] = False
+
+        if "auto_textures_do" not in config:
+            config["auto_textures_do"] = []
+
+        if "show_dates" not in config:
+            config["show_dates"] = False
+
+        if "use_searcher" not in config:
+            config["use_searcher"] = False
+except:
+    raise mcpy_error("No config!")
+
+try:
+    with open("searcher.json", "rb") as f:
+        searcher = json.loads(f.read())
+except: searcher = None
+
 item_texture = {"resource_pack_name": config["project_name"], "texture_data": {}}
 terrain_texture = {"resource_pack_name": config["project_name"], "num_mip_levels": 0, "padding": 0, "texture_data": {}}
-texture_list = []
-warnings = []
-compile_count = 0
 
 class fileChangeHandler(FileSystemEventHandler):
     """Watchdog"""
@@ -44,7 +103,6 @@ class fileChangeHandler(FileSystemEventHandler):
     def on_deleted(self, event):
         if event.is_directory == False:
             single_compile.remove_file(event.src_path)
-            
 
 class compiler_tools:
     """Some useful tools for commonly used cases"""
@@ -83,21 +141,12 @@ class single_compile:
     def remove_json_comments(path):
         """Returns string of a valid json object without any comments"""
         with open(f"{path}", "r") as f:
-            file = f.read()
+            file = f.readlines()
 
         updated_text = ""
 
-        keep_moving = True
-        file_index = -1
         for i in file:
-            file_index += 1
-            if i == "/" and file[file_index + 1] == "/":
-                keep_moving = False
-
-            if keep_moving == False and i == "\n":
-                keep_moving = True
-
-            if keep_moving:
+            if i.strip().startswith("//") == False:
                 updated_text += i
 
         return updated_text
@@ -203,6 +252,39 @@ class single_compile:
             else:
                 return path.replace("RP", f"{config["output"]}/RP")
     
+    def run_searcher(s:str, path:str):
+        """Replace ``s`` string with the searcher keys."""
+        if searcher is not None:
+            run_replace = [False, False]
+            for i in searcher:
+                if "file_types" in i:
+                    for j in i["file_types"]:
+                        if "startswith" in j:
+                            if path.startswith(j["startswith"]):
+                                run_replace[0] = True
+
+                        else:
+                            run_replace[0] = True
+                        
+                        if "endswith" in j:
+                            if path.endswith(j["endswith"]):
+                                run_replace[1] = True
+
+                        else:
+                            run_replace[1] = True
+
+                    if run_replace[0] and run_replace[1]:
+                        run_replace = True
+                    else:
+                        run_replace = False
+
+                else:
+                    run_replace = True
+
+                if run_replace:
+                    s = s.replace(i["search"], i["replace_with"])
+        return s
+
     def lang(path):
         """Compile a language file, removes lines with comments, and blank lines"""
         with open(f"{path}", "r") as f:
@@ -213,6 +295,9 @@ class single_compile:
         for i in lang_file:
             if i != "\n" and i.startswith("##") == False:
                 write_lang += f"{i}"
+
+        if config["use_searcher"]:
+            write_lang = single_compile.run_searcher(write_lang, path)
 
         os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
         with open(f"{single_compile.convert_to_output(path)}", "w") as f:
@@ -239,6 +324,9 @@ class single_compile:
                 if i != "\n" and i.startswith("#") == False:
                     write_function += f"{i}"
 
+            if config["use_searcher"]:
+                write_function = single_compile.run_searcher(write_function, path)
+
             if str(path).endswith(".mc"):
                 path = path.replace(".mc", ".mcfunction")
             os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
@@ -250,29 +338,38 @@ class single_compile:
 
     def gen_json(path):
         """Compile generic json, output will have removed comments"""
-        last_resort = False
         try:
-            if path.endswith("manifest.json"):
-                time.sleep(0.15)
-            try:
-                with open(f"{path}", "r") as f:
-                    json_file = json.loads(f.read())
-
-            except:
+            # Read file
+            with open(f"{path}", "rb") as f:
+                compiler_flag = f.readline().decode("utf-8").rstrip()
                 try:
+                    raw_contents = f"{{{f.read().decode("utf-8", "ignore")}"
+                except:
+                    warnings.append(f"WARNING: `{path}` cannot read raw contents. A compiler flag may be required!")
+
+            # Act upon compiler flags
+            if compiler_flag == "//BYTE":
+                single_compile.byte_file(path)
+            else:
+                # Try to load json
+                try:
+                    json_file = json.loads(raw_contents)
+
+                # Retry without potential comments
+                except:
                     commentless_json = single_compile.remove_json_comments(path)
                     json_file = json.loads(commentless_json)
                     del commentless_json
-                except:
-                    last_resort = True
-                    single_compile.byte_file(path)
-                    global warnings
-                    warnings.append(f"WARNING: '{path}' resorted to compiling as bytes, double check output file.")
 
-            if last_resort == False:
+                # Dump and set emojis
+                dumped_json = json.dumps(json_file)
+                if config["use_searcher"]:
+                    dumped_json = str(single_compile.run_searcher(dumped_json, path))
+
+                # Write to output
                 os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
-                with open(f"{single_compile.convert_to_output(path)}", "w") as f:
-                    f.write(json.dumps(json_file))
+                with open(f"{single_compile.convert_to_output(path)}", "w", encoding="utf-8") as f:
+                    f.write(dumped_json)
                     
         except json.JSONDecodeError as error:
             if str(error) == "Expecting value: line 1 column 1 (char 0)":
@@ -282,40 +379,39 @@ class single_compile:
 
     def bp_json(path:str):
         """Compiles items, blocks, and entities in behavior pack.\n\nPrimary use case is removing the slash at queue_command event"""
-        last_resort = False
-        if path.startswith("BP/items"):
-            file_type = "item"
-        elif path.startswith("BP/blocks"):
-            file_type = "block"
-        elif path.startswith("BP/entities"):
-            file_type = "entity"
-
         try:
-            try:
-                with open(f"{path}", "r") as f:
-                    json_file = json.loads(f.read())
-
-            except:
+            # Read file
+            with open(f"{path}", "rb") as f:
+                compiler_flag = f.readline().decode("utf-8").rstrip()
                 try:
+                    raw_contents = f"{{{f.read().decode("utf-8", "ignore")}"
+                except:
+                    warnings.append(f"WARNING: `{path}` cannot read raw contents. A compiler flag may be required!")
+
+            # Act upon compiler flags
+            if compiler_flag == "//BYTE":
+                single_compile.byte_file(path)
+            elif compiler_flag == "//PASS":
+                pass
+            else:
+                # Try to load json
+                try:
+                    json_file = json.loads(raw_contents)
+
+                # Retry without potential comments
+                except:
                     commentless_json = single_compile.remove_json_comments(path)
                     json_file = json.loads(commentless_json)
                     del commentless_json
-                except:
-                    last_resort = True
-                    single_compile.byte_file(path)
-                    global warnings
-                    warnings.append(f"WARNING: '{path}' resorted to compiling as bytes, double check output file.")
+                
+                dumped_json = json.dumps(json_file).replace("('", "$>BRACKET").replace("')", "$<BRACKET").replace("\"/", "\"").replace("'/", "\"")
 
-            if last_resort == False:
-                components = json_file[f"minecraft:{file_type}"]["components"]
-                del json_file[f"minecraft:{file_type}"]["components"]
-                string_json = str(json_file).replace("/", "").replace("'", "\"")
-                json_file = json.loads(string_json)
-                json_file[f"minecraft:{file_type}"] |= {"components": components}
+                if config["use_searcher"]:
+                    dumped_json = str(single_compile.run_searcher(dumped_json, path))
 
                 os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
-                with open(f"{single_compile.convert_to_output(path)}", "w") as f:
-                    f.write(json.dumps(json_file))
+                with open(f"{single_compile.convert_to_output(path)}", "w", encoding="utf-8") as f:
+                    f.write(dumped_json.replace("$>BRACKET", "('").replace("$<BRACKET", "')"))
                     
         except json.JSONDecodeError as error:
             if str(error) == "Expecting value: line 1 column 1 (char 0)":
@@ -327,6 +423,9 @@ class single_compile:
         """Compile script file"""
         with open(path) as f:
             script = f.read()
+
+        if config["use_searcher"]:
+            script = single_compile.run_searcher(script, path)
 
         os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
         with open(f"{single_compile.convert_to_output(path)}", "w") as f:
@@ -342,7 +441,7 @@ class single_compile:
         cv2.imwrite(single_compile.convert_to_output(path.replace(ext, ".png")), image_file)
 
     def byte_file(path):
-        """Compile file by reading and writing it as bytes, does not fancy thing.\n\nMain use case scenarios:\n* Audio\n* Unkown files"""
+        """Compile file by reading and writing it as bytes, does no fancy thing.\n\nMain use case scenarios:\n* Audio\n* Unkown files\n* Some unicode characters"""
         with open(f"{path}", "rb") as f:
             file = f.read()
 
