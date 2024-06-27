@@ -146,9 +146,8 @@ class single_compile:
         updated_text = ""
 
         for i in file:
-            if i.strip().startswith("//") == False:
-                updated_text += i
-
+            updated_text += i.split("//")[0]
+            
         return updated_text
 
     def file(path:str):
@@ -300,7 +299,7 @@ class single_compile:
             write_lang = single_compile.run_searcher(write_lang, path)
 
         os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
-        with open(f"{single_compile.convert_to_output(path)}", "w") as f:
+        with open(f"{single_compile.convert_to_output(path)}", "w", encoding="utf8") as f:
             f.write(write_lang)
 
     def mcfunc(path):
@@ -316,7 +315,7 @@ class single_compile:
                 idx = -1
                 for i in functions:
                     idx += 1
-                    functions[idx] = str(functions[idx]).replace("'", "").replace("b", "", 1)
+                    functions[idx] = functions[idx].decode("utf-8")
 
             write_function = ""
 
@@ -330,8 +329,8 @@ class single_compile:
             if str(path).endswith(".mc"):
                 path = path.replace(".mc", ".mcfunction")
             os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
-            with open(f"{single_compile.convert_to_output(path)}", "w") as f:
-                f.write(write_function)
+            with open(f"{single_compile.convert_to_output(path)}", "w", encoding="utf-8") as f:
+                f.write(write_function.replace("Â", ""))
 
         except:
             warnings.append(f"ERROR COMPILING: {path}")
@@ -340,13 +339,9 @@ class single_compile:
         """Compile generic json, output will have removed comments"""
         try:
             # Read file
-            with open(f"{path}", "rb") as f:
-                compiler_flag = f.readline().decode("utf-8").rstrip()
-                try:
-                    raw_contents = f"{{{f.read().decode("utf-8", "ignore")}"
-                except:
-                    warnings.append(f"WARNING: `{path}` cannot read raw contents. A compiler flag may be required!")
-
+            with open(f"{path}", "r", encoding="utf-8") as f:
+                compiler_flag = f.readline()
+                raw_contents = f"{{{f.read()}"
             # Act upon compiler flags
             if compiler_flag == "//BYTE":
                 single_compile.byte_file(path)
@@ -362,14 +357,14 @@ class single_compile:
                     del commentless_json
 
                 # Dump and set emojis
-                dumped_json = json.dumps(json_file)
+                dumped_json = json.dumps(json_file, ensure_ascii=False)
                 if config["use_searcher"]:
                     dumped_json = str(single_compile.run_searcher(dumped_json, path))
 
                 # Write to output
                 os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
                 with open(f"{single_compile.convert_to_output(path)}", "w", encoding="utf-8") as f:
-                    f.write(dumped_json)
+                    f.write(dumped_json.replace("Â", ""))
                     
         except json.JSONDecodeError as error:
             if str(error) == "Expecting value: line 1 column 1 (char 0)":
@@ -381,12 +376,9 @@ class single_compile:
         """Compiles items, blocks, and entities in behavior pack.\n\nPrimary use case is removing the slash at queue_command event"""
         try:
             # Read file
-            with open(f"{path}", "rb") as f:
-                compiler_flag = f.readline().decode("utf-8").rstrip()
-                try:
-                    raw_contents = f"{{{f.read().decode("utf-8", "ignore")}"
-                except:
-                    warnings.append(f"WARNING: `{path}` cannot read raw contents. A compiler flag may be required!")
+            with open(f"{path}", "r", encoding="utf-8") as f:
+                compiler_flag = f.readline()
+                raw_contents = f"{{{f.read()}"
 
             # Act upon compiler flags
             if compiler_flag == "//BYTE":
@@ -404,14 +396,14 @@ class single_compile:
                     json_file = json.loads(commentless_json)
                     del commentless_json
                 
-                dumped_json = json.dumps(json_file).replace("('", "$>BRACKET").replace("')", "$<BRACKET").replace("\"/", "\"").replace("'/", "\"")
+                dumped_json = json.dumps(json_file, ensure_ascii=False).replace("('", "$>BRACKET").replace("')", "$<BRACKET").replace("\"/", "\"").replace("'/", "\"")
 
                 if config["use_searcher"]:
                     dumped_json = str(single_compile.run_searcher(dumped_json, path))
 
                 os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
                 with open(f"{single_compile.convert_to_output(path)}", "w", encoding="utf-8") as f:
-                    f.write(dumped_json.replace("$>BRACKET", "('").replace("$<BRACKET", "')"))
+                    f.write(dumped_json.replace("$>BRACKET", "('").replace("$<BRACKET", "')").replace("Â", ""))
                     
         except json.JSONDecodeError as error:
             if str(error) == "Expecting value: line 1 column 1 (char 0)":
@@ -428,7 +420,7 @@ class single_compile:
             script = single_compile.run_searcher(script, path)
 
         os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
-        with open(f"{single_compile.convert_to_output(path)}", "w") as f:
+        with open(f"{single_compile.convert_to_output(path)}", "w", encoding="utf-8") as f:
             f.write(script)
 
     def image(path:str):
@@ -441,12 +433,12 @@ class single_compile:
         cv2.imwrite(single_compile.convert_to_output(path.replace(ext, ".png")), image_file)
 
     def byte_file(path):
-        """Compile file by reading and writing it as bytes, does no fancy thing.\n\nMain use case scenarios:\n* Audio\n* Unkown files\n* Some unicode characters"""
+        """Compile file by reading and writing it as bytes, does no fancy thing.\n\nMain use case scenarios:\n* Audio\n* Unkown files"""
         with open(f"{path}", "rb") as f:
             file = f.read()
 
         os.makedirs(os.path.split(single_compile.convert_to_output(path))[0], exist_ok=True)
-        with open(f"{single_compile.convert_to_output(path)}", "wb") as f:
+        with open(f"{single_compile.convert_to_output(path)}", "wb", encoding="utf-8") as f:
             f.write(file)
 
 def generate_manifests():

@@ -43,7 +43,7 @@ You can use this [example config](https://github.com/RoseyKat/mcpy-compiler/blob
         "list"
     ],
     "show_dates": true, // Whether to show the date and time when a file compiles (`show_compiled` must be true)
-    "use_searcher": true // Whether to compile with the emoji codex.
+    "use_searcher": true // Whether to compile with the searcher.json keys.
 }
 ```
 
@@ -66,5 +66,4 @@ If you run into any problems please create a [github issue](https://github.com/R
 * This *might* work on mac and linux although I can't make any promises, as long as you have the `output` set to something else other than `@com_mojang`.
 * Sometimes a file might compile twice in one go.
 * Only webp and jpg/jpeg images will be converted to png.
-* Json comments must be on a seperate line to compile as regular json.
-* The output is removed before new files are compiled into it.
+* The output is erased before new files are compiled into it.

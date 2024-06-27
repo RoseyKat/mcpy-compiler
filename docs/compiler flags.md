@@ -9,10 +9,4 @@ For example in a json file, have the first line be `//COMPILER_FLAG_HERE`.
 Universal compiler flags that work everywhere.
 
 * `//PASS` - Doesn't compile the file.
-
-# JSON
-In brackets will disclose what type of json flags will work on.         
-> `BP` meaning it will work on behavior pack json (items, entities, and blocks).          
-> `GEN` meaning generic json, which is everything but `BP` usually
-
-* `//BYTE` - Halt compilition as json and compile as byte file instead. (BP, GEN)
+* `//BYTE` - Compile as bytes, lowest level of compiling.

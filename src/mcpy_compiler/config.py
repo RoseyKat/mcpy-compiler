@@ -1,6 +1,6 @@
 import json
 
-def create_config(output:str, auto_manifest:bool, project_name:str, project_description:str, target_version:str, script_entry:str, packs:list, show_compiled:bool, compile_confusing_files:bool, auto_texture_defining:bool, auto_textures_do:list, show_dates:bool):
+def create_config(output:str, auto_manifest:bool, project_name:str, project_description:str, target_version:str, script_entry:str, packs:list, show_compiled:bool, compile_confusing_files:bool, auto_texture_defining:bool, auto_textures_do:list, show_dates:bool, use_searcher:bool):
     """
     Create a config file.
 
@@ -27,6 +27,8 @@ def create_config(output:str, auto_manifest:bool, project_name:str, project_desc
     `auto_textures_do`: what type of texture to automatically define. `blocks`, `items`, and `list`.
 
     `show_dates`: whether to show the date and time a file compiled at.
+
+    `use_searcher`: whether to use the searcher.json feature. That searches for a key and replaces everything with it.
     """
     config = {
         "output": output,
@@ -40,7 +42,8 @@ def create_config(output:str, auto_manifest:bool, project_name:str, project_desc
         "compile_confusing_files": compile_confusing_files,
         "auto_texture_defining": auto_texture_defining,
         "auto_textures_do": auto_textures_do,
-        "show_dates": show_dates
+        "show_dates": show_dates,
+        "use_searcher": use_searcher
     }
 
     with open("config.json", "w") as f:
