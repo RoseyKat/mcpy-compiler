@@ -16,8 +16,6 @@ A niche little compiler made in python that will go through all your addon files
 
 * Search & Replace words/characters. Use `searcher.json` and insert a keyword to find in each file and replace.
 
-* Each file compiler flag. Each file can have it's own compiler flags, which is simply the first line of any file with a comment saying it's flag.
-
 # Getting started
 Create a `config.json` file at the root directory of your project and set it up:    
 You can use this [example config](https://github.com/RoseyKat/mcpy-compiler/blob/main/example_config.json)      
